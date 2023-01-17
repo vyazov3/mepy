@@ -29,3 +29,9 @@ for category, link in categories.items():
             category = category.replace(item3, "_")
     with open(f"{category}.json", "w", encoding="utf-8") as file:
         json.dump(categories, file, ensure_ascii=False, indent=4)
+
+
+
+
+
+
