@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 import requests
+import time
 import json
 import os
 
@@ -31,21 +32,34 @@ import os
 #     with open(f"{category}.json", "w", encoding="utf-8") as file:
 #         json.dump(categories, file, ensure_ascii=False, indent=4)
 
-# ========================================================================== avito parser
-url = "https://www.avito.ru/lipetsk/avtomobili/volkswagen/golf-ASgBAgICAkTgtg24mSjitg3Ipig?cd=1&radius=200"
+# ========================================================================== drom parser
+page = 1
+headers = {
+        "Accept": "*/*",
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 YaBrowser/22.11.5.715 Yowser/2.5 Safari/537.36",
+    }
+while True:
+    
+    if page == 1:
+        url = "https://auto.drom.ru/volkswagen/"
+    else: 
+        url = f"https://auto.drom.ru/volkswagen/all/page{page}/"
 
-# headers = {
-#     "Accept": "*/*",
-#     "User-Agent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 YaBrowser/22.11.5.715 Yowser/2.5 Safari/537.36",
-#  }
-
-response = requests.get(url, headers={'User-Agent': UserAgent().chrome})
-for key, value in response.request.headers.items():
-    print(key+": "+value)
-print(requests.get(url))
-
-
-
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, "lxml")
+        card_cars = soup.find_all("a", class_="css-xb5nz8 ewrty961")
+        for item in card_cars:
+            print(item.find("span").text)
+            if item.find("div", class_="css-o2r31p e3f4v4l0") is not None:
+                print(item.find("div", class_="css-o2r31p e3f4v4l0").text)
+            print(f"{item.find('span', {'data-ftid': 'bull_price'}).text} руб.")
+            print("=========================================")
+        page += 1
+        print(page)
+        time.sleep(3)
+    else:
+        break
 # ========================================================================== the task
 # x = int(input("Введите размерность массива по столбцам: ")) # 5
 # y = int(input("Введите размерность массива по строкам: ")) # 3
@@ -57,6 +71,7 @@ print(requests.get(url))
 # 15 24 24 20 7
 # 14 23 22 21 8
 # 13 12 11 10 9
+
 # x, y = map(int, input().split())
 # count = 1
 # direction = 0;
