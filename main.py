@@ -45,15 +45,30 @@ while True:
     else: 
         url = f"https://auto.drom.ru/volkswagen/all/page{page}/"
 
+
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, "lxml")
         card_cars = soup.find_all("a", class_="css-xb5nz8 ewrty961")
         for item in card_cars:
-            print(item.find("span").text)
+            link_card = item['href']
+            print(f"Ссылка: {link_card}")
+            city_car = item.find('span', class_='css-1488ad e162wx9x0').text            
+            print(f"Город: {city_car}")    
+            model_car = item.find('span').text.split(', ')[0]
+            year_car = item.find('span').text.split(', ')[1]
+            print(f"Модель: {model_car}")
+            print(f"Год: {year_car}")
+            info_car_arr = item.findAll('span', {'data-ftid': 'bull_description-item'})
+            filtered_info_car_arr = []
+            for item_info in info_car_arr:
+                filtered_info_car_arr.append(item_info.get_text())
+            print(filtered_info_car_arr)
             if item.find("div", class_="css-o2r31p e3f4v4l0") is not None:
-                print(item.find("div", class_="css-o2r31p e3f4v4l0").text)
-            print(f"{item.find('span', {'data-ftid': 'bull_price'}).text} руб.")
+                car_engine = item.find('div', class_='css-o2r31p e3f4v4l0').text
+                print(f"Двигатель: {car_engine}")              
+            price_car = item.find('span', {'data-ftid': 'bull_price'}).text
+            print(f"Цена: {price_car} руб.")        
             print("=========================================")
         page += 1
         print(page)
