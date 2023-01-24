@@ -4,7 +4,6 @@ import requests
 import time
 import json
 import os
-
 # url = "https://health-diet.ru/table_calorie/"
 
 # headers = {
@@ -35,9 +34,23 @@ import os
 # ========================================================================== drom parser
 page = 1
 headers = {
-        "Accept": "*/*",
-        "User-Agent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 YaBrowser/22.11.5.715 Yowser/2.5 Safari/537.36",
-    }
+    "Accept": "*/*",
+    "User-Agent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 YaBrowser/22.11.5.715 Yowser/2.5 Safari/537.36"
+}
+
+def info_in_json():
+    car = {}
+    car['Модель'] = model_car
+    car['Двигатель'] = car_engine
+    car['Год'] = year_car
+    car['Цена'] = price_car
+    car['Город'] = city_car
+    car['Общие характеристики'] = filtered_info_car_arr
+    car['Ссылка'] = link_card
+    with open(f"{model_car}.json", "w", encoding="utf-8") as file:
+        json.dump(car, file, ensure_ascii=False, indent=4)
+
+
 while True:
     
     if page == 1:
@@ -63,13 +76,14 @@ while True:
             filtered_info_car_arr = []
             for item_info in info_car_arr:
                 filtered_info_car_arr.append(item_info.get_text())
-            print(filtered_info_car_arr)
+            print(' '.join(filtered_info_car_arr))
             if item.find("div", class_="css-o2r31p e3f4v4l0") is not None:
                 car_engine = item.find('div', class_='css-o2r31p e3f4v4l0').text
                 print(f"Двигатель: {car_engine}")              
             price_car = item.find('span', {'data-ftid': 'bull_price'}).text
             print(f"Цена: {price_car} руб.")        
             print("=========================================")
+        info_in_json()
         page += 1
         print(page)
         time.sleep(3)
