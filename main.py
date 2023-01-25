@@ -37,8 +37,8 @@ headers = {
     "Accept": "*/*",
     "User-Agent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 YaBrowser/22.11.5.715 Yowser/2.5 Safari/537.36"
 }
-
-def info_in_json():
+count = 0
+def info_in_json(count):
     car = {}
     car['Модель'] = model_car
     car['Двигатель'] = car_engine
@@ -49,7 +49,8 @@ def info_in_json():
     car['Ссылка'] = link_card
     with open(f"{model_car}.json", "w", encoding="utf-8") as file:
         json.dump(car, file, ensure_ascii=False, indent=4)
-
+        print(f"{car} машина создана {count}")
+        print("==================================")
 
 while True:
     
@@ -65,27 +66,22 @@ while True:
         card_cars = soup.find_all("a", class_="css-xb5nz8 ewrty961")
         for item in card_cars:
             link_card = item['href']
-            print(f"Ссылка: {link_card}")
             city_car = item.find('span', class_='css-1488ad e162wx9x0').text            
-            print(f"Город: {city_car}")    
             model_car = item.find('span').text.split(', ')[0]
             year_car = item.find('span').text.split(', ')[1]
-            print(f"Модель: {model_car}")
-            print(f"Год: {year_car}")
             info_car_arr = item.findAll('span', {'data-ftid': 'bull_description-item'})
             filtered_info_car_arr = []
             for item_info in info_car_arr:
                 filtered_info_car_arr.append(item_info.get_text())
-            print(' '.join(filtered_info_car_arr))
+            car_engine = ""
             if item.find("div", class_="css-o2r31p e3f4v4l0") is not None:
                 car_engine = item.find('div', class_='css-o2r31p e3f4v4l0').text
-                print(f"Двигатель: {car_engine}")              
             price_car = item.find('span', {'data-ftid': 'bull_price'}).text
-            print(f"Цена: {price_car} руб.")        
-            print("=========================================")
-        info_in_json()
+            count += 1
+            info_in_json(count)
+            time.sleep(5)
         page += 1
-        print(page)
+        print(f"{page}")
         time.sleep(3)
     else:
         break
